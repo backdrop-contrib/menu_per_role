@@ -20,17 +20,17 @@ function menu_per_role_permission() {
 }
 
 /**
- * Implementation of hook_menu_link_alter()
+ * Implements hook_form_FORM_ID_alter().
  */
-function menu_per_role_form_menu_edit_item_alter(&$link) {
+function menu_per_role_form_menu_edit_item_alter(&$form, &$form_state, $form_id) {
   if (!user_access('administer menu_per_role')) {
     return;
   }
 
-  $default_value_roles = $link['mlid']['#value'] ? _menu_per_role_get_roles($link['mlid']['#value'], 0) : array();
-  $default_value_hide_from_roles = $link['mlid']['#value'] ? _menu_per_role_get_roles($link['mlid']['#value'], 1) : array();
+  $default_value_roles = $form['mlid']['#value'] ? _menu_per_role_get_roles($form['mlid']['#value'], 0) : array();
+  $default_value_hide_from_roles = $form['mlid']['#value'] ? _menu_per_role_get_roles($form['mlid']['#value'], 1) : array();
 
-  $link['menu_per_role'] = array(
+  $form['menu_per_role'] = array(
     '#type' => 'fieldset',
     '#title' => t('Restrict item visibility'),
     '#collapsible' => TRUE,
@@ -40,7 +40,7 @@ function menu_per_role_form_menu_edit_item_alter(&$link) {
     '#tree' => TRUE,
   );
 
-  $link['menu_per_role']['menu_per_role_roles'] = array(
+  $form['menu_per_role']['menu_per_role_roles'] = array(
     '#type' => 'checkboxes',
     '#title' => t('Show menu item only to selected roles'),
     '#options' => user_roles(),
@@ -48,7 +48,7 @@ function menu_per_role_form_menu_edit_item_alter(&$link) {
     '#description' => t('Check no role to leave the access permission to the default. A user who is not part of at least one of the selected roles will not see this menu item.'),
   );
 
-  $link['menu_per_role']['menu_per_role_hide_from_roles'] = array(
+  $form['menu_per_role']['menu_per_role_hide_from_roles'] = array(
     '#type' => 'checkboxes',
     '#title' => t('Hide menu item from selected roles'),
     '#options' => user_roles(),
