@@ -20,6 +20,24 @@ function menu_per_role_permission() {
 }
 
 /**
+ * Implements hook_menu().
+ */
+function menu_per_role_menu() {
+  $menu = array();
+
+  $menu['admin/config/system/menu_per_role'] = array(
+    'title' => 'Menu per Role',
+    'description' => 'Settings for the menu per role module',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('menu_per_role_settings_form'),
+    'access arguments' => array('administer menu_per_role'),
+    'file' => 'menu_per_role.admin.inc',
+  );
+
+  return $menu;
+}
+
+/**
  * Implements hook_form_FORM_ID_alter().
  */
 function menu_per_role_form_menu_edit_item_alter(&$form, &$form_state, $form_id) {
