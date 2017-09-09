@@ -88,7 +88,7 @@ function menu_per_role_menu_link_update($link) {
     $hrids_str = _menu_per_role_serialize_rids($link['menu_per_role']['menu_per_role_hide_from_roles']);
 
     $fields = array('rids' => $rids_str, 'hrids' => $hrids_str);
-    if (db_query('SELECT mlid FROM {menu_per_role} WHERE mlid = :mlid', array(':mlid' => $link['mlid']))->rowCount() == 0){
+    if (db_query('SELECT count(*) FROM {menu_per_role} WHERE mlid = :mlid', array(':mlid' => $link['mlid']))->fetchColumn() == 0){
       $fields['mlid'] = $link['mlid'];
       db_insert('menu_per_role')->fields($fields)->execute();
     }
