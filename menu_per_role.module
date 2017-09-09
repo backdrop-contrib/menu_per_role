@@ -172,7 +172,7 @@ function menu_per_role_translated_menu_link_alter(&$item, $map) {
 }
 
 /**
- * Determines access for a give menu item id.
+ * Determines access for a given menu item id.
  *
  * @param int $mlid
  *   The menu item identifier.
