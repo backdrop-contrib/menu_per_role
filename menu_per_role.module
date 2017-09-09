@@ -12,8 +12,8 @@ function menu_per_role_permission() {
   $permissions = array();
 
   $permissions['administer menu_per_role'] = array(
-    'title' => t("Administer menu per role"),
-    'description' => t("Permission for who can access the menu per role forms."),
+    'title' => t('Administer menu per role'),
+    'description' => t('Permission for who can access the menu per role forms.'),
   );
 
   return $permissions;
