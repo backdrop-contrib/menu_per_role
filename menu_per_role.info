@@ -2,4 +2,7 @@ name = Menu Per Role
 description = Allows restricting access to menu items per role.
 package = Access control
 core = 7.x
+
+configure = admin/config/system/menu_per_role
+
 dependencies[] = menu
