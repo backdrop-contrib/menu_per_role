@@ -4,22 +4,18 @@
  * @file
  * Allows restricting access to menu items per role.
  */
-
+ 
 /**
- * Implements hook_help().
+ * Implements hook_config_info().
  */
-function menu_per_role_help($path, $arg) {
-  switch ($path) {
-    case 'admin/help#menu_per_role':
-      $output = '';
-      $output .= '<h3>' . t('About') . '</h3>';
-      $output .= '<p>' . t('The Menu per Role module allows you to restrict access of menu items per roles.') . '</p>';
-      $output .= '<h3>' . t('Configuration') . '</h3>';
-      $output .= '<p>' . t('Just activate the Menu per Role module and edit a menu item as usual. There will be one or two fieldsets, depending on the configuration of the module, that allows you to restrict access by role.') . '</p>';
-      $output .= '<p>' . t("If you don't check any roles the default access permissions will be kept. Otherwise the module will additionally restrict access to the chosen user roles.") . '</p>';
-      return $output;
-  }
+function menu_per_role_config_info() {
+  $prefixes['menu_per_role.settings'] = array(
+    'label' => t('Settings for Menu Per Role'),
+    'group' => t('Configuration')
+  );
+  return $prefixes;
 }
+
 
 /**
  * Implements hook_permission().
@@ -42,9 +38,9 @@ function menu_per_role_menu() {
   $menu = array();
 
   $menu['admin/config/system/menu_per_role'] = array(
-    'title' => 'Menu per Role',
-    'description' => 'Settings for the menu per role module',
-    'page callback' => 'drupal_get_form',
+    'title' => t('Menu per Role'),
+    'description' => t('Settings for the menu per role module'),
+    'page callback' => 'backdrop_get_form',
     'page arguments' => array('menu_per_role_settings_form'),
     'access arguments' => array('administer menu_per_role'),
     'file' => 'menu_per_role.admin.inc',
@@ -64,6 +60,9 @@ function menu_per_role_form_menu_edit_item_alter(&$form, &$form_state, $form_id)
   $default_value_roles = $form['mlid']['#value'] ? _menu_per_role_get_roles($form['mlid']['#value'], 0) : array();
   $default_value_hide_from_roles = $form['mlid']['#value'] ? _menu_per_role_get_roles($form['mlid']['#value'], 1) : array();
 
+  $hide_or_show_show = config_get('menu_per_role.settings','menu_per_role_hide_show');
+
+  if ($hide_or_show_show <= 1){
   $form['menu_per_role'] = array(
     '#type' => 'fieldset',
     '#title' => t('Restrict item visibility'),
@@ -73,7 +72,8 @@ function menu_per_role_form_menu_edit_item_alter(&$form, &$form_state, $form_id)
     '#description' => t('Check to know whether the user has proper visibility permissions to see this menu item. Note that both checks are always performed.'),
     '#tree' => TRUE,
   );
-
+ }
+  if ($hide_or_show_show == 2 || $hide_or_show_show == 0){
   $form['menu_per_role']['menu_per_role_roles'] = array(
     '#type' => 'checkboxes',
     '#title' => t('Show menu item only to selected roles'),
@@ -81,7 +81,7 @@ function menu_per_role_form_menu_edit_item_alter(&$form, &$form_state, $form_id)
     '#default_value' => $default_value_roles,
     '#description' => t('Check no role to leave the access permission to the default. A user who is not part of at least one of the selected roles will not see this menu item.'),
   );
-
+}
   $form['menu_per_role']['menu_per_role_hide_from_roles'] = array(
     '#type' => 'checkboxes',
     '#title' => t('Hide menu item from selected roles'),
@@ -107,7 +107,7 @@ function menu_per_role_menu_link_insert($link) {
       'hrids' => $hrids_str,
       'mlid' => $link['mlid'],
     );
-    drupal_write_record('menu_per_role', $fields);
+    backdrop_write_record('menu_per_role', $fields);
   }
 }
 
