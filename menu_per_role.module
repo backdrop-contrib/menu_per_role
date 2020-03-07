@@ -211,14 +211,15 @@ function _menu_per_role_access($mlid) {
 
   // Check whether this role has visibility access (must be present).
   $rids = _menu_per_role_get_roles($mlid, 0);
-  if (!empty($rids) && count(array_intersect($rids, array_keys($user->roles))) == 0) {
+  dsm($rids, "menu item");
+  if (!empty($rids) && count(array_intersect($rids, $user->roles)) == 0) {
     // Not permitted by the rids...
     return FALSE;
   }
 
   // Check whether this role has visibility access (must not be present).
   $hrids = _menu_per_role_get_roles($mlid, 1);
-  if (!empty($hrids) && count(array_intersect($hrids, array_keys($user->roles))) > 0) {
+  if (!empty($hrids) && count(array_intersect($hrids, $user->roles)) > 0) {
     // Not permitted by the hrids...
     return FALSE;
   }
