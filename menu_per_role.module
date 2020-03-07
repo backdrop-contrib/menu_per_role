@@ -56,7 +56,6 @@ function menu_per_role_form_menu_edit_item_alter(&$form, &$form_state, $form_id)
   if (!user_access('administer menu_per_role')) {
     return;
   }
-
   $default_value_roles = $form['mlid']['#value'] ? _menu_per_role_get_roles($form['mlid']['#value'], 0) : array();
   $default_value_hide_from_roles = $form['mlid']['#value'] ? _menu_per_role_get_roles($form['mlid']['#value'], 1) : array();
 
@@ -69,9 +68,11 @@ function menu_per_role_form_menu_edit_item_alter(&$form, &$form_state, $form_id)
     '#collapsible' => TRUE,
     '#collapsed' => (count($default_value_roles) + count($default_value_hide_from_roles)) == 0,
     '#weight' => 5,
-    '#description' => t('Check to know whether the user has proper visibility permissions to see this menu item. Note that both checks are always performed.'),
+    '#description' => t('Check to know whether the user has proper visibility permissions to see this menu item. Note that both checks are always performed; if you select to hide and show an itme to the same role, it will be hidden.'),
     '#tree' => TRUE,
   );
+  // TODO: figure out how to validate this form so show and hide can not 
+  // be selected at the same time for one role 
  }
   if ($hide_or_show_show == 2 || $hide_or_show_show == 0){
   $form['menu_per_role']['menu_per_role_roles'] = array(
@@ -211,7 +212,6 @@ function _menu_per_role_access($mlid) {
 
   // Check whether this role has visibility access (must be present).
   $rids = _menu_per_role_get_roles($mlid, 0);
-  dsm($rids, "menu item");
   if (!empty($rids) && count(array_intersect($rids, $user->roles)) == 0) {
     // Not permitted by the rids...
     return FALSE;
@@ -312,3 +312,6 @@ function _menu_per_role_get_roles($mlid, $show) {
   // Not defined, everyone has the right to use it.
   return array();
 }
+
+
+
