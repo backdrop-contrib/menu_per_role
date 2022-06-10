@@ -38,3 +38,64 @@ function menu_per_role_schema() {
   );
   return $schema;
 }
+
+/**
+ * Convert Drupal 7 migrated roles from IDs to Keys.
+ */
+function menu_per_role_update_1000() {
+  $records = db_select('menu_per_role', 'mpr')
+    ->fields('mpr')
+    ->execute()
+    ->fetchAllAssoc('mlid');
+
+  foreach ($records as $key => $record) {
+    $updateRecord = FALSE;
+    $rids = $record->rids;
+    $ridParts = explode(',', $rids);
+
+    // Iterate through each rid that needs to be converted.
+    foreach ($ridParts as &$rid) {
+      switch ($rid) {
+        case 1:
+          $rid = BACKDROP_ANONYMOUS_ROLE;
+          $updateRecord = TRUE;
+
+          break;
+        case 2:
+          $rid = BACKDROP_AUTHENTICATED_ROLE;
+          $updateRecord = TRUE;
+
+          break;
+      }
+    }
+
+    $hrids = $record->hrids;
+    $hridParts = explode(',', $hrids);
+
+    // Iterate through each hrid that needs to be converted.
+    foreach ($hridParts as &$hrid) {
+      switch ($hrid) {
+        case 1:
+          $hrid = BACKDROP_ANONYMOUS_ROLE;
+          $updateRecord = TRUE;
+
+          break;
+        case 2:
+          $hrid = BACKDROP_AUTHENTICATED_ROLE;
+          $updateRecord = TRUE;
+
+          break;
+      }
+    }
+
+    if ($updateRecord) {
+      db_update('menu_per_role')
+        ->fields([
+          'rids' => implode(',', $ridParts),
+          'hrids' => implode(',', $hridParts),
+        ])
+        ->condition('mlid', $key)
+        ->execute();
+    }
+  }
+}
